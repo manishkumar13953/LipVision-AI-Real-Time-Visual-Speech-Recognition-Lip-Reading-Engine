@@ -9,6 +9,12 @@ Real-time visual speech recognition that uses lip movement to recognize speech.
 - Uses a Python backend
 - Uses Auto-AVSR for visual speech recognition
 
+ ## Prediction Vocabulary
+
+This model uses a 5,000-piece tokenizer trained for the LRS3 dataset. The tokenizer includes complete words, word fragments, and punctuation; it is not a fixed list of words the model can predict. The model combines these pieces to generate an English transcript from the video.
+
+Because predictions depend on the video, the model may produce different words and sentences. Results are estimates and may contain errors.
+
 ## Project Structure
 
 - `app.py` — Python web application
