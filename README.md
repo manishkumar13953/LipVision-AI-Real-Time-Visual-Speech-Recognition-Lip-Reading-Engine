@@ -51,7 +51,7 @@ The `/correct` endpoint sends transcript text to a local Ollama server; no hoste
 2. Pull the default model if needed:
 
    ```powershell
-   ollama pull llama3.2:3b
+   ollama pull llama3.2:latest
    ```
 
    If you already have a compatible model installed under a different tag, set `OLLAMA_MODEL` to that tag instead to avoid another download.
@@ -61,7 +61,7 @@ The `/correct` endpoint sends transcript text to a local Ollama server; no hoste
    ollama serve
    ```
 
-4. In a separate PowerShell window, set optional API/model settings and start Flask. Defaults are `OLLAMA_URL=http://localhost:11434` and `OLLAMA_MODEL=llama3.2:3b`.
+4. In a separate PowerShell window, set optional API/model settings and start Flask. Defaults are `OLLAMA_URL=http://localhost:11434` and `OLLAMA_MODEL=llama3.2:latest`.
 
    ```powershell
    $env:OLLAMA_URL = "http://localhost:11434"
@@ -69,7 +69,7 @@ The `/correct` endpoint sends transcript text to a local Ollama server; no hoste
    .\venv\Scripts\python.exe app.py
    ```
 
-   Change the model value to `llama3.2:3b` after pulling that tag, or omit the assignment to use the default. The endpoint allows up to 120 seconds for a cold local model request. No extra Python dependency is required.
+   Set `OLLAMA_MODEL` to another installed compatible model if needed, or omit the assignment to use the default. The endpoint allows up to 120 seconds for a cold local model request. No extra Python dependency is required.
 
 ## Project structure
 

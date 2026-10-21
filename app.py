@@ -8,6 +8,13 @@ import re
 from urllib.error import HTTPError, URLError
 from urllib.request import Request, urlopen
 
+# Windows terminals may default to cp1252, which cannot print the status emojis
+# below. Keep startup diagnostics from crashing before Flask begins serving.
+if sys.platform == 'win32':
+    for stream in (sys.stdout, sys.stderr):
+        if hasattr(stream, 'reconfigure'):
+            stream.reconfigure(encoding='utf-8', errors='replace')
+
 sys.path.insert(0, os.path.abspath('.'))
 
 from vsr_inference import VSRModel
@@ -30,7 +37,7 @@ except Exception as e:
 
 ALLOWED_EXTENSIONS = {'mp4', 'avi', 'mov', 'mkv', 'webm'}
 OLLAMA_URL = os.environ.get('OLLAMA_URL', 'http://localhost:11434').rstrip('/')
-OLLAMA_MODEL = os.environ.get('OLLAMA_MODEL', 'llama3.2:3b')
+OLLAMA_MODEL = os.environ.get('OLLAMA_MODEL', '').strip() or 'llama3.2:latest'
 # A local model can need extra time on its first, cold request (especially on CPU).
 OLLAMA_TIMEOUT_SECONDS = 120
 CORRECTION_SYSTEM_PROMPT = (
@@ -180,6 +187,11 @@ def correct_text():
         return jsonify({'error': 'Could not connect to Ollama. Make sure Ollama is running.'}), 503
     except (ValueError, KeyError, TypeError, AttributeError):
         return jsonify({'error': 'Ollama returned an invalid correction response.'}), 502
+    except Exception:
+        app.logger.exception('Unexpected failure while correcting transcript text')
+        return jsonify({
+            'error': 'AI correction could not be completed. Your original transcript is still available.'
+        }), 502
 
 @app.route('/info', methods=['GET'])
 def info():
@@ -203,4 +215,4 @@ if __name__ == '__main__':
     print("   http://localhost:5000")
     print("\n(Press Ctrl+C to stop the app)\n")
     
-    app.run(host='0.0.0.0', port=5000, debug=False)
+    app.run(host='127.0.0.1', port=5000, debug=False)
